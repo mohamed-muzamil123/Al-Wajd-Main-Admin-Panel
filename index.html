@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="shortcut icon" href="../images/Logo Hifz Dawa Fest.jpg" type="image/x-icon">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-width: 250px;
+            --header-height: 60px;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--primary-gradient);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 1rem 1.5rem;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+        .main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+        }
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .content {
+            padding: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table th {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        .form-floating > .form-control:focus ~ label {
+            color: #667eea;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .content {
+                padding: 1rem;
+            }
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 50px;
+            margin: 0 0.5rem;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+        .step.active {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: calc(100% - 1rem);
+            height: 2px;
+            background: #dee2e6;
+            z-index: -1;
+        }
+        .step:last-child::after {
+            display: none;
+        }
+        .assigned-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .badge-team {
+            font-size: 0.8em;
+        }
+        .success-message {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+   
+
+    <div class="wrapper">
+        
+        <!-- Sidebar (unchanged) -->
+        <nav class="sidebar d-flex flex-column p-3">
+           <div class="mb-4 d-flex align-items-center">
+    <img src="../images/Logo Hifz Dawa Fest.jpg" alt="Logo" height="50" class="me-2">
+    <span class="h5 text-white mb-0">Admin Panel</span>
+</div>
+
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-section="dashboard"><i class="bi bi-house-door me-2"></i>Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="programmes"><i class="bi bi-calendar-event me-2"></i>Programme Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="students"><i class="bi bi-people me-2"></i>Student Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="assign"><i class="bi bi-arrow-right-circle me-2"></i>Assign Students</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content (unchanged) -->
+        <div class="main">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="h4 mb-0 fw-bold" id="pageTitle">Dashboard</h1>
+                <button class="btn btn-outline-secondary d-md-none" id="toggleSidebarBtn"><i class="bi bi-list"></i></button>
+            </header>
+
+            <!-- Content Sections (unchanged) -->
+            <main class="content">
+                <!-- Dashboard Section -->
+                <section id="dashboard">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body text-center py-5">
+                                    <i class="bi bi-gear-wide-connected display-1 text-muted mb-3"></i>
+                                    <h2 class="card-title">Welcome to the Admin Panel</h2>
+                                    <p class="card-text">Manage programmes and students</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Programme Management Section -->
+                <section id="programmes" style="display: none;">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2 class="h4 mb-0">Programme Management</h2>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#programmeModal" id="addProgrammeBtn">
+                                    <i class="bi bi-plus-circle me-2"></i>Add Programme
+                                </button>
+                            </div>
+                            <!-- Search and Filters -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" id="programmeSearch" placeholder="Search programmes...">
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="d-flex justify-content-end">
+                                                <button class="btn btn-outline-secondary me-2" id="resetProgrammeFiltersBtn">Reset</button>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-outline-secondary" id="prevProgrammePageBtn"><i class="bi bi-chevron-left"></i></button>
+                                                    <span class="btn btn-outline-secondary px-3" id="programmePageInfo">Page 1</span>
+                                                    <button type="button" class="btn btn-outline-secondary" id="nextProgrammePageBtn"><i class="bi bi-chevron-right"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Programme Table -->
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0" id="programmeTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Name</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="programmeTableBody">
+                                                <!-- Dynamic -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Student Management Section -->
+                <section id="students" style="display: none;">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2 class="h4 mb-0">Student Management</h2>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#studentModal" id="addStudentBtn">
+                                    <i class="bi bi-plus-circle me-2"></i>Add Student
+                                </button>
+                            </div>
+                            <!-- Search and Filters -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" id="studentSearch" placeholder="Search students...">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-select" id="studentTeamFilter">
+                                                <option value="">All Teams</option>
+                                                <option value="1">Team 1</option>
+                                                <option value="2">Team 2</option>
+                                                <option value="3">Team 3</option>
+                                                <option value="4">Team 4</option>
+                                                <option value="5">Team 5</option>
+                                                <option value="6">Team 6</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="d-flex justify-content-end">
+                                                <button class="btn btn-outline-secondary me-2" id="resetStudentFiltersBtn">Reset</button>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-outline-secondary" id="prevStudentPageBtn"><i class="bi bi-chevron-left"></i></button>
+                                                    <span class="btn btn-outline-secondary px-3" id="studentPageInfo">Page 1</span>
+                                                    <button type="button" class="btn btn-outline-secondary" id="nextStudentPageBtn"><i class="bi bi-chevron-right"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Student Table -->
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0" id="studentTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Chest No</th>
+                                                    <th>Team</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="studentTableBody">
+                                                <!-- Dynamic -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Assign Students Section -->
+                <section id="assign" style="display: none;">
+                    <div class="row">
+                        <div class="col-12">
+                            <h2 class="h4 mb-4">Assign Students to Programmes</h2>
+                            <!-- Step Indicator -->
+                            <div class="step-indicator mb-4">
+                                <div class="step active" id="step1"><i class="bi bi-calendar-event"></i> Select Programme</div>
+                                <div class="step" id="step2"><i class="bi bi-people"></i> Select Team</div>
+                                <div class="step" id="step3"><i class="bi bi-check-circle"></i> Assign Students</div>
+                            </div>
+                            <!-- Form -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <form id="assignForm">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Select Programme</label>
+                                                <select class="form-select" id="selectProgramme">
+                                                    <option value="">Choose a programme...</option>
+                                                    <!-- Dynamic -->
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3" id="teamDiv" style="display: none;">
+                                                <label class="form-label">Select Team</label>
+                                                <select class="form-select" id="selectTeam">
+                                                    <option value="">Choose a team...</option>
+                                                    <option value="1">Team 1</option>
+                                                    <option value="2">Team 2</option>
+                                                    <option value="3">Team 3</option>
+                                                    <option value="4">Team 4</option>
+                                                    <option value="5">Team 5</option>
+                                                    <option value="6">Team 6</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- Available Students -->
+                                        <div id="availableStudentsDiv" style="display: none;" class="mb-4">
+                                            <h5>Available Students</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Select</th>
+                                                            <th>Name</th>
+                                                            <th>Chest No</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="availableStudentsBody">
+                                                        <!-- Dynamic -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <button type="button" class="btn btn-success" id="assignBtn" disabled>Assign Selected</button>
+                                        </div>
+                                        <!-- Assigned Students -->
+                                        <div id="assignedStudentsDiv" style="display: none;" class="mt-4">
+                                            <h5>Assigned Students</h5>
+                                            <div class="assigned-list">
+                                                <div class="row g-2" id="assignedStudentsList">
+                                                    <!-- Dynamic -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Programme Modal -->
+    <div class="modal fade" id="programmeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="programmeModalTitle">Add Programme</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="programmeForm">
+                        <input type="hidden" id="programmeId">
+                        <div class="mb-3">
+                            <label class="form-label">Programme ID</label>
+                            <input type="text" class="form-control" id="progId" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Programme Name</label>
+                            <input type="text" class="form-control" id="progName" required>
+                        </div>
+                        <div id="programmeSuccessMessage" class="success-message">Programme saved successfully!</div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveProgrammeBtn">Save Programme</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Modal -->
+    <div class="modal fade" id="studentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studentModalTitle">Add Student</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="studentForm">
+                        <input type="hidden" id="studentId">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" id="stuName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Chest No</label>
+                            <input type="text" class="form-control" id="stuChest" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Team</label>
+                            <select class="form-select" id="stuTeam" required>
+                                <option value="">Select Team</option>
+                                <option value="1">Team 1</option>
+                                <option value="2">Team 2</option>
+                                <option value="3">Team 3</option>
+                                <option value="4">Team 4</option>
+                                <option value="5">Team 5</option>
+                                <option value="6">Team 6</option>
+                            </select>
+                        </div>
+                        <div id="studentSuccessMessage" class="success-message">Student saved successfully!</div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveStudentBtn">Save Student</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Firebase SDK (v12.2.1 consistent with config) -->
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHkYUWefszILsPYUDmr64eKnqYGP2crfU",
+            authDomain: "fest-programme-managemen-681ea.firebaseapp.com",
+            projectId: "fest-programme-managemen-681ea",
+            storageBucket: "fest-programme-managemen-681ea.firebasestorage.app",
+            messagingSenderId: "209441096388",
+            appId: "1:209441096388:web:4e3d7e2fab30e9e3c1ff91"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Firestore Helper Functions
+        async function fetchCollection(collName) {
+            try {
+                const snapshot = await getDocs(collection(db, collName));
+                return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            } catch (error) {
+                console.error(`Error fetching ${collName}:`, error);
+                alert(`Failed to load ${collName}. Check console for details.`);
+                return [];
+            }
+        }
+
+        async function saveDoc(collName, docId, data) {
+            try {
+                await setDoc(doc(db, collName, docId), data);
+            } catch (error) {
+                console.error(`Error saving to ${collName}:`, error);
+                throw new Error(`Failed to save to ${collName}`);
+            }
+        }
+
+        async function deleteDocFromFirestore(collName, docId) {
+            try {
+                await deleteDoc(doc(db, collName, docId));
+            } catch (error) {
+                console.error(`Error deleting from ${collName}:`, error);
+                throw new Error(`Failed to delete from ${collName}`);
+            }
+        }
+
+        // Pagination Settings
+        const PAGE_SIZE = 10;
+        let currentProgrammePage = 1;
+        let currentStudentPage = 1;
+        let filteredProgrammes = [];
+        let filteredStudents = [];
+
+        // Utility to Force Remove Modal Backdrop
+        function removeModalBackdrop() {
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
+        }
+
+        // Navigation
+        function showSection(sectionId, event = null) {
+            if (event) event.preventDefault();
+            document.querySelectorAll('section').forEach(sec => sec.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            const navLink = document.querySelector(`.nav-link[data-section="${sectionId}"]`);
+            if (navLink) {
+                navLink.classList.add('active');
+                document.getElementById('pageTitle').textContent = navLink.textContent.trim();
+            } else {
+                document.getElementById('pageTitle').textContent = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
+            }
+            if (sectionId === 'programmes') {
+                updateProgrammeTable();
+                updateProgrammeFilters();
+            } else if (sectionId === 'students') {
+                updateStudentTable();
+            } else if (sectionId === 'assign') {
+                updateProgrammeDropdown();
+                updateAssignedStudents();
+            }
+        }
+
+        function setupNavListeners() {
+            document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+                link.addEventListener('click', (event) => {
+                    const sectionId = link.getAttribute('data-section');
+                    showSection(sectionId, event);
+                });
+            });
+        }
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        }
+
+        // Programme Management
+        function openAddProgrammeModal(editId = null) {
+            const modal = new bootstrap.Modal(document.getElementById('programmeModal'), { backdrop: 'static' });
+            modal.show();
+            document.getElementById('programmeModalTitle').textContent = editId ? 'Edit Programme' : 'Add Programme';
+            document.getElementById('programmeForm').reset();
+            document.getElementById('programmeSuccessMessage').style.display = 'none';
+            document.getElementById('programmeId').value = editId || '';
+            if (editId) {
+                fetchCollection('programmes').then(progs => {
+                    const prog = progs.find(p => p.id === editId);
+                    if (prog) {
+                        document.getElementById('progId').value = prog.id;
+                        document.getElementById('progName').value = prog.name;
+                    }
+                }).catch(() => alert('Failed to load programme data'));
+            }
+        }
+
+        async function saveProgramme(editId = null) {
+            const id = document.getElementById('progId').value;
+            const name = document.getElementById('progName').value;
+
+            if (!id || !name) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const programmeData = { id, name };
+            try {
+                await saveDoc('programmes', id, programmeData);
+                document.getElementById('programmeForm').reset();
+                document.getElementById('programmeSuccessMessage').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('programmeSuccessMessage').style.display = 'none';
+                }, 3000);
+                await updateProgrammeTable();
+                await updateProgrammeFilters();
+                if (document.getElementById('assign').style.display === 'block') {
+                    await updateProgrammeDropdown();
+                }
+            } catch (error) {
+                alert('Failed to save programme: ' + error.message);
+            }
+        }
+
+        async function deleteProgramme(id) {
+            if (confirm('Are you sure? This will remove assignments too.')) {
+                try {
+                    const allAssignments = await fetchCollection('assignments');
+                    const assignmentsToDelete = allAssignments.filter(a => a.programmeId === id);
+                    for (const assignment of assignmentsToDelete) {
+                        await deleteDocFromFirestore('assignments', assignment.id);
+                    }
+                    await deleteDocFromFirestore('programmes', id);
+                    alert('Programme deleted successfully!');
+                    await updateProgrammeTable();
+                    if (document.getElementById('assign').style.display === 'block') {
+                        await updateProgrammeDropdown();
+                        await updateAssignedStudents();
+                    }
+                } catch (error) {
+                    alert('Failed to delete programme: ' + error.message);
+                }
+            }
+        }
+
+        async function filterProgrammes() {
+            const search = document.getElementById('programmeSearch').value.toLowerCase();
+            try {
+                const allProgrammes = await fetchCollection('programmes');
+                let filtered = allProgrammes.filter(p => 
+                    p.name.toLowerCase().includes(search) || 
+                    p.id.toLowerCase().includes(search)
+                );
+                filteredProgrammes = filtered;
+                currentProgrammePage = 1;
+                await updateProgrammeTable();
+            } catch (error) {
+                alert('Failed to filter programmes');
+            }
+        }
+
+        async function updateProgrammeFilters() {
+            try {
+                // No date filters, just ensure the filter dropdown is cleared if needed
+                const select = document.getElementById('programmeFilter');
+                if (select) select.innerHTML = '';
+            } catch (error) {
+                console.error('Failed to update filters:', error);
+            }
+        }
+
+        function resetProgrammeFilters() {
+            document.getElementById('programmeSearch').value = '';
+            filterProgrammes();
+        }
+
+        async function updateProgrammeTable() {
+            try {
+                const allProgrammes = await fetchCollection('programmes');
+                const start = (currentProgrammePage - 1) * PAGE_SIZE;
+                const end = start + PAGE_SIZE;
+                const pageData = filteredProgrammes.length ? filteredProgrammes.slice(start, end) : allProgrammes.slice(start, end);
+                const tbody = document.getElementById('programmeTableBody');
+                tbody.innerHTML = '';
+                pageData.forEach(prog => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${prog.id}</td>
+                        <td>${prog.name}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1 edit-programme-btn" data-id="${prog.id}"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger delete-programme-btn" data-id="${prog.id}"><i class="bi bi-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('programmePageInfo').textContent = `Page ${currentProgrammePage} of ${Math.ceil((filteredProgrammes.length || allProgrammes.length) / PAGE_SIZE)}`;
+                document.querySelectorAll('.edit-programme-btn').forEach(btn => {
+                    btn.addEventListener('click', () => openAddProgrammeModal(btn.getAttribute('data-id')));
+                });
+                document.querySelectorAll('.delete-programme-btn').forEach(btn => {
+                    btn.addEventListener('click', () => deleteProgramme(btn.getAttribute('data-id')));
+                });
+            } catch (error) {
+                alert('Failed to update programme table');
+            }
+        }
+
+        function changePageProgrammes(delta) {
+            const maxPage = Math.ceil((filteredProgrammes.length || 1) / PAGE_SIZE);
+            currentProgrammePage += delta;
+            currentProgrammePage = Math.max(1, Math.min(currentProgrammePage, maxPage));
+            updateProgrammeTable();
+        }
+
+        // Student Management
+        function openAddStudentModal(editId = null) {
+            const modal = new bootstrap.Modal(document.getElementById('studentModal'), { backdrop: 'static' });
+            modal.show();
+            document.getElementById('studentModalTitle').textContent = editId ? 'Edit Student' : 'Add Student';
+            document.getElementById('studentForm').reset();
+            document.getElementById('studentSuccessMessage').style.display = 'none';
+            document.getElementById('studentId').value = editId || '';
+            if (editId) {
+                fetchCollection('students').then(stus => {
+                    const stu = stus.find(s => s.id === editId);
+                    if (stu) {
+                        document.getElementById('stuName').value = stu.name;
+                        document.getElementById('stuChest').value = stu.chestNo;
+                        document.getElementById('stuTeam').value = stu.team;
+                    }
+                }).catch(() => alert('Failed to load student data'));
+            }
+        }
+
+        async function saveStudent() {
+            const editId = document.getElementById('studentId').value || null;
+            const name = document.getElementById('stuName').value;
+            const chestNo = document.getElementById('stuChest').value;
+            const team = document.getElementById('stuTeam').value;
+
+            if (!name || !chestNo || !team) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const id = editId || Date.now().toString();
+            const studentData = { id, name, chestNo, team };
+            try {
+                await saveDoc('students', id, studentData);
+                document.getElementById('studentForm').reset();
+                document.getElementById('studentSuccessMessage').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('studentSuccessMessage').style.display = 'none';
+                }, 3000);
+                await updateStudentTable();
+                if (document.getElementById('assign').style.display === 'block') {
+                    await updateAssignedStudents();
+                    if (document.getElementById('selectTeam').value) {
+                        await loadAvailableStudents();
+                    }
+                }
+            } catch (error) {
+                alert('Failed to save student: ' + error.message);
+            }
+        }
+
+        async function deleteStudent(id) {
+            if (confirm('Are you sure? This will remove assignments too.')) {
+                try {
+                    const allAssignments = await fetchCollection('assignments');
+                    const assignmentsToDelete = allAssignments.filter(a => a.studentId === id);
+                    for (const assignment of assignmentsToDelete) {
+                        await deleteDocFromFirestore('assignments', assignment.id);
+                    }
+                    await deleteDocFromFirestore('students', id);
+                    alert('Student deleted successfully!');
+                    await updateStudentTable();
+                    if (document.getElementById('assign').style.display === 'block') {
+                        await updateAssignedStudents();
+                        if (document.getElementById('selectTeam').value) {
+                            await loadAvailableStudents();
+                        }
+                    }
+                } catch (error) {
+                    alert('Failed to delete student: ' + error.message);
+                }
+            }
+        }
+
+        async function filterStudents() {
+            const search = document.getElementById('studentSearch').value.toLowerCase();
+            const teamFilter = document.getElementById('studentTeamFilter').value;
+            try {
+                const allStudents = await fetchCollection('students');
+                let filtered = allStudents.filter(s => 
+                    s.name.toLowerCase().includes(search) ||
+                    s.chestNo.toLowerCase().includes(search)
+                );
+                if (teamFilter) {
+                    filtered = filtered.filter(s => s.team === teamFilter);
+                }
+                filteredStudents = filtered;
+                currentStudentPage = 1;
+                await updateStudentTable();
+            } catch (error) {
+                alert('Failed to filter students');
+            }
+        }
+
+        function resetStudentFilters() {
+            document.getElementById('studentSearch').value = '';
+            document.getElementById('studentTeamFilter').value = '';
+            filterStudents();
+        }
+
+        async function updateStudentTable() {
+            try {
+                const allStudents = await fetchCollection('students');
+                const start = (currentStudentPage - 1) * PAGE_SIZE;
+                const end = start + PAGE_SIZE;
+                const pageData = filteredStudents.length ? filteredStudents.slice(start, end) : allStudents.slice(start, end);
+                const tbody = document.getElementById('studentTableBody');
+                tbody.innerHTML = '';
+                pageData.forEach(stu => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${stu.name}</td>
+                        <td>${stu.chestNo}</td>
+                        <td><span class="badge bg-primary badge-team">Team ${stu.team}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1 edit-student-btn" data-id="${stu.id}"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger delete-student-btn" data-id="${stu.id}"><i class="bi bi-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('studentPageInfo').textContent = `Page ${currentStudentPage} of ${Math.ceil((filteredStudents.length || allStudents.length) / PAGE_SIZE)}`;
+                document.querySelectorAll('.edit-student-btn').forEach(btn => {
+                    btn.addEventListener('click', () => openAddStudentModal(btn.getAttribute('data-id')));
+                });
+                document.querySelectorAll('.delete-student-btn').forEach(btn => {
+                    btn.addEventListener('click', () => deleteStudent(btn.getAttribute('data-id')));
+                });
+            } catch (error) {
+                alert('Failed to update student table');
+            }
+        }
+
+        function changePageStudents(delta) {
+            const maxPage = Math.ceil((filteredStudents.length || 1) / PAGE_SIZE);
+            currentStudentPage += delta;
+            currentStudentPage = Math.max(1, Math.min(currentStudentPage, maxPage));
+            updateStudentTable();
+        }
+
+        // Assign Students
+        async function updateProgrammeDropdown() {
+            try {
+                const allProgrammes = await fetchCollection('programmes');
+                const select = document.getElementById('selectProgramme');
+                select.innerHTML = '<option value="">Choose a programme...</option>';
+                allProgrammes.forEach(prog => {
+                    const opt = document.createElement('option');
+                    opt.value = prog.id;
+                    opt.textContent = prog.name;
+                    select.appendChild(opt);
+                });
+                document.getElementById('step1').classList.add('active');
+                document.getElementById('step2').classList.remove('active', 'completed');
+                document.getElementById('step3').classList.remove('active', 'completed');
+                document.getElementById('teamDiv').style.display = 'none';
+                document.getElementById('availableStudentsDiv').style.display = 'none';
+                document.getElementById('assignedStudentsDiv').style.display = 'none';
+            } catch (error) {
+                alert('Failed to load programmes');
+            }
+        }
+
+        function onProgrammeChange() {
+            const progId = document.getElementById('selectProgramme').value;
+            document.getElementById('teamDiv').style.display = progId ? 'block' : 'none';
+            document.getElementById('availableStudentsDiv').style.display = 'none';
+            document.getElementById('assignedStudentsDiv').style.display = progId ? 'block' : 'none';
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            if (progId) {
+                step1.classList.add('completed');
+                step1.classList.remove('active');
+                step2.classList.add('active');
+                step3.classList.remove('active', 'completed');
+                document.getElementById('selectTeam').value = '';
+                updateAssignedStudents();
+            } else {
+                step1.classList.add('active');
+                step2.classList.remove('active', 'completed');
+                step3.classList.remove('active', 'completed');
+            }
+        }
+
+        function onTeamChange() {
+            const team = document.getElementById('selectTeam').value;
+            document.getElementById('availableStudentsDiv').style.display = team ? 'block' : 'none';
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            if (team) {
+                step2.classList.add('completed');
+                step2.classList.remove('active');
+                step3.classList.add('active');
+                loadAvailableStudents().then(() => {
+                    const tbody = document.getElementById('availableStudentsBody');
+                    if (!tbody.hasChildNodes()) {
+                        tbody.innerHTML = `<tr><td colspan="3" class="text-center">No available students</td></tr>`;
+                        document.getElementById('assignBtn').disabled = true;
+                    }
+                });
+            } else {
+                step2.classList.add('active');
+                step3.classList.remove('active');
+                document.getElementById('availableStudentsDiv').style.display = 'none';
+            }
+        }
+
+        async function loadAvailableStudents() {
+            const progId = document.getElementById('selectProgramme').value;
+            const team = document.getElementById('selectTeam').value;
+            if (!progId || !team) return;
+            try {
+                const allStudents = await fetchCollection('students');
+                const allAssignments = await fetchCollection('assignments');
+                const available = allStudents.filter(s => 
+                    s.team === team && 
+                    !allAssignments.some(a => a.programmeId === progId && a.chestNo === s.chestNo)
+                );
+                const tbody = document.getElementById('availableStudentsBody');
+                tbody.innerHTML = '';
+                available.forEach(stu => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><input type="checkbox" value="${stu.id}" class="available-checkbox" data-chest-no="${stu.chestNo}"></td>
+                        <td>${stu.name}</td>
+                        <td>${stu.chestNo}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('assignBtn').disabled = true;
+                document.querySelectorAll('.available-checkbox').forEach(cb => {
+                    cb.addEventListener('change', () => {
+                        const checked = document.querySelectorAll('.available-checkbox:checked').length > 0;
+                        document.getElementById('assignBtn').disabled = !checked;
+                    });
+                });
+            } catch (error) {
+                alert('Failed to load available students');
+            }
+        }
+
+        async function assignSelectedStudents() {
+            const progId = document.getElementById('selectProgramme').value;
+            const selectedCheckboxes = document.querySelectorAll('.available-checkbox:checked');
+            const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+            const selectedChestNos = Array.from(selectedCheckboxes).map(cb => cb.getAttribute('data-chest-no'));
+            if (selectedIds.length === 0) return;
+            try {
+                const allStudents = await fetchCollection('students');
+                for (let i = 0; i < selectedIds.length; i++) {
+                    const studentId = selectedIds[i];
+                    const chestNo = selectedChestNos[i];
+                    const student = allStudents.find(s => s.id === studentId);
+                    const assignmentId = `${progId}_${studentId}`;
+                    await saveDoc('assignments', assignmentId, { 
+                        programmeId: progId, 
+                        studentId, 
+                        chestNo, 
+                        team: student ? student.team : 'Unknown' 
+                    });
+                }
+                alert(`${selectedIds.length} students assigned!`);
+                await loadAvailableStudents();
+                await updateAssignedStudents();
+            } catch (error) {
+                alert('Failed to assign students: ' + error.message);
+            }
+        }
+
+        async function updateAssignedStudents() {
+            const progId = document.getElementById('selectProgramme').value;
+            if (!progId) return;
+            try {
+                const allAssignments = await fetchCollection('assignments');
+                const allStudents = await fetchCollection('students');
+                const assigned = allAssignments.filter(a => a.programmeId === progId);
+                const container = document.getElementById('assignedStudentsList');
+                container.innerHTML = '';
+                assigned.forEach(a => {
+                    const student = allStudents.find(s => s.id === a.studentId);
+                    if (student) {
+                        const div = document.createElement('div');
+                        div.className = 'col-md-4';
+                        div.innerHTML = `
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">${student.name}</h6>
+                                    <p class="card-text small">Chest: ${a.chestNo} | Team: ${a.team}</p>
+                                    <button class="btn btn-sm btn-outline-danger remove-assignment-btn" data-prog-id="${progId}" data-stu-id="${a.studentId}"><i class="bi bi-x"></i> Remove</button>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    }
+                });
+                document.querySelectorAll('.remove-assignment-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const progId = btn.getAttribute('data-prog-id');
+                        const stuId = btn.getAttribute('data-stu-id');
+                        removeAssignment(progId, stuId);
+                    });
+                });
+            } catch (error) {
+                alert('Failed to load assigned students');
+            }
+        }
+
+        async function removeAssignment(progId, studentId) {
+            if (confirm('Remove this assignment?')) {
+                try {
+                    const assignmentId = `${progId}_${studentId}`;
+                    await deleteDocFromFirestore('assignments', assignmentId);
+                    alert('Assignment removed!');
+                    await updateAssignedStudents();
+                    if (document.getElementById('selectTeam').value) {
+                        await loadAvailableStudents();
+                    }
+                } catch (error) {
+                    alert('Failed to remove assignment: ' + error.message);
+                }
+            }
+        }
+
+        // Setup All Event Listeners
+        function setupEventListeners() {
+            document.getElementById('toggleSidebarBtn').addEventListener('click', toggleSidebar);
+            document.getElementById('addProgrammeBtn').addEventListener('click', () => openAddProgrammeModal());
+            document.getElementById('addStudentBtn').addEventListener('click', () => openAddStudentModal());
+            document.getElementById('saveProgrammeBtn').addEventListener('click', () => saveProgramme());
+            document.getElementById('saveStudentBtn').addEventListener('click', () => saveStudent());
+            document.getElementById('programmeSearch').addEventListener('keyup', filterProgrammes);
+            document.getElementById('resetProgrammeFiltersBtn').addEventListener('click', resetProgrammeFilters);
+            document.getElementById('prevProgrammePageBtn').addEventListener('click', () => changePageProgrammes(-1));
+            document.getElementById('nextProgrammePageBtn').addEventListener('click', () => changePageProgrammes(1));
+            document.getElementById('studentSearch').addEventListener('keyup', filterStudents);
+            document.getElementById('studentTeamFilter').addEventListener('change', filterStudents);
+            document.getElementById('resetStudentFiltersBtn').addEventListener('click', resetStudentFilters);
+            document.getElementById('prevStudentPageBtn').addEventListener('click', () => changePageStudents(-1));
+            document.getElementById('nextStudentPageBtn').addEventListener('click', () => changePageStudents(1));
+            document.getElementById('selectProgramme').addEventListener('change', onProgrammeChange);
+            document.getElementById('selectTeam').addEventListener('change', onTeamChange);
+            document.getElementById('assignBtn').addEventListener('click', assignSelectedStudents);
+        }
+
+        // Initialization
+        async function initialize() {
+            try {
+                setupNavListeners();
+                setupEventListeners();
+                showSection('dashboard');
+            } catch (error) {
+                console.error('Initialization error:', error);
+                alert('Failed to initialize app');
+            }
+        }
+
+        const programmeModalEl = document.getElementById('programmeModal');
+        programmeModalEl.addEventListener('hidden.bs.modal', removeModalBackdrop);
+
+        const studentModalEl = document.getElementById('studentModal');
+        studentModalEl.addEventListener('hidden.bs.modal', removeModalBackdrop);
+
+        // Start app
+        initialize();
+    </script>
+</body>
+</html>
