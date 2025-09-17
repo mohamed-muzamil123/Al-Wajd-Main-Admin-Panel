@@ -297,12 +297,12 @@
                                         <div class="col-md-3">
                                             <select class="form-select" id="studentTeamFilter">
                                                 <option value="">All Teams</option>
-                                                <option value="1">Team 1</option>
-                                                <option value="2">Team 2</option>
-                                                <option value="3">Team 3</option>
-                                                <option value="4">Team 4</option>
-                                                <option value="5">Team 5</option>
-                                                <option value="6">Team 6</option>
+                                                <option value="Plus One">Plus One</option>
+                                                <option value="Plus Two">Plus Two</option>
+                                                <option value="Degree First">Degree First</option>
+                                                <option value="Degree Second">Degree Second</option>
+                                                <option value="Degree Third">Degree Third</option>
+                                                <option value="PG">PG</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4">
@@ -369,12 +369,12 @@
                                                 <label class="form-label">Select Team</label>
                                                 <select class="form-select" id="selectTeam">
                                                     <option value="">Choose a team...</option>
-                                                    <option value="1">Team 1</option>
-                                                    <option value="2">Team 2</option>
-                                                    <option value="3">Team 3</option>
-                                                    <option value="4">Team 4</option>
-                                                    <option value="5">Team 5</option>
-                                                    <option value="6">Team 6</option>
+                                                    <option value="Plus One">Plus One</option>
+                                                    <option value="Plus Two">Plus Two</option>
+                                                    <option value="Degree First">Degree First</option>
+                                                    <option value="Degree Second">Degree Second</option>
+                                                    <option value="Degree Third">Degree Third</option>
+                                                    <option value="PG">PG</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -463,18 +463,18 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Chest No</label>
-                            <input type="text" class="form-control" id="stuChest" inputmode="numeric" required>
+                            <input type="text" class="form-control" id="stuChest" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Team</label>
                             <select class="form-select" id="stuTeam" required>
                                 <option value="">Select Team</option>
-                                <option value="1">Team 1</option>
-                                <option value="2">Team 2</option>
-                                <option value="3">Team 3</option>
-                                <option value="4">Team 4</option>
-                                <option value="5">Team 5</option>
-                                <option value="6">Team 6</option>
+                                <option value="Plus One">Plus One</option>
+                                <option value="Plus Two">Plus Two</option>
+                                <option value="Degree First">Degree First</option>
+                                <option value="Degree Second">Degree Second</option>
+                                <option value="Degree Third">Degree Third</option>
+                                <option value="PG">PG</option>
                             </select>
                         </div>
                         <div id="studentSuccessMessage" class="success-message">Student saved successfully!</div>
@@ -846,7 +846,7 @@
                     tr.innerHTML = `
                         <td>${stu.name}</td>
                         <td>${stu.chestNo}</td>
-                        <td><span class="badge bg-primary badge-team">Team ${stu.team}</span></td>
+                        <td><span class="badge bg-primary badge-team">${stu.team}</span></td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary me-1 edit-student-btn" data-id="${stu.id}"><i class="bi bi-pencil"></i></button>
                             <button class="btn btn-sm btn-outline-danger delete-student-btn" data-id="${stu.id}"><i class="bi bi-trash"></i></button>
@@ -901,7 +901,7 @@
             document.getElementById('teamDiv').style.display = progId ? 'block' : 'none';
             document.getElementById('availableStudentsDiv').style.display = 'none';
             document.getElementById('assignedStudentsDiv').style.display = progId ? 'block' : 'none';
-            const step1 = document.getElementById('step1');
+             const step1 = document.getElementById('step1');
             const step2 = document.getElementById('step2');
             const step3 = document.getElementById('step3');
             if (progId) {
@@ -1101,6 +1101,4 @@
         initialize();
     </script>
 </body>
-
 </html>
-
